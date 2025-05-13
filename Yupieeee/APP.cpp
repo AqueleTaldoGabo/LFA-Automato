@@ -6,7 +6,8 @@ using namespace std;
 no *preencheAlfabeto(no *lista);
 no *preencheEstador(no *lista, int quantia);
 no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant);
-Qses *preencheRegras(Qses *lista, int quanti, no *lista1);
+Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2);
+Qses *pilharQses(Qses *lista, string c);
 void imprimeListaQ(Qses *lista);
 void imprimeLista(no *lista);
 void imprimeListaCaminhos(Qses *lista);
@@ -29,7 +30,7 @@ int main(){
     L2 = preencheAlfabeto(L2);
     cout << "Finais: " << endl;
     Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
-    qsese = preencheRegras(qsese, quantQ, L1);
+    qsese = preencheRegras(qsese, quantQ, L1, L2);
     imprimeListaQ(qsese);
     imprimeLista(Qfs);
     imprimeLista(L1);
@@ -89,9 +90,9 @@ no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant){
     return (lista2);
 }
 
-Qses *preencheRegras(Qses *lista, int quanti, no *lista1){
+Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
     Qses *inicial = lista, *ponteiro = lista, *ponteiro2 = lista;
-    no *pc, *pp, *pk = lista1;
+    no *pc, *pp, *pk = lista1, *pa = lista2, *pe, *ps;
     
     string c = " ", k;
     while(c != "S"){
@@ -110,8 +111,11 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1){
             else{
                 pc = ponteiro->condicoes;
                 pp = ponteiro->condicionados;
+                pe = ponteiro->empilha;
+                ps = ponteiro->desempilha;
                 while(true){
                     pk = lista1;
+                    pa = lista2;
                     cout << "Defina o caracter:" << endl;
                     cin >> c;
                     if(c == "S"){
@@ -127,37 +131,64 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1){
                         if(pk == NULL){
                             cout << "Nao tem caractere!!!!" << endl;
                         }
+                        
                         else{
                             pc = PUSH(pc, c);
-                            bool carros = true;
-                            while(carros){
-                                ponteiro2 = inicial;
-                                cout << "Defina seu caminho" << endl;
-                                cin >> c;
-                                k = "Q" + c;
-                                if(c == "S"){
-                                    break;
-                                }
-                                while(ponteiro2->nome != k && ponteiro2 != NULL){
-                                    ponteiro2 = ponteiro2->fila;
-                                }
-                                if(ponteiro2 == NULL){
-                                    cout << "Estado nao existe" << endl;
-                                }
-                                else{
-                                    pp = PUSH(pp, k);
-                                    carros = false;
-                                }
+                            cout << "Defina o que vai ser desempilhado" << endl;
+                            cin >> c;
+                            while(pa->info != c){
+                            pa = pa->link;
+                            if(pa == NULL)
+                                break;
                             }
+                            if(pa == NULL){
+                            cout << "Nao faz parte do alfabeto da pilha" << endl;
+                            }else{
+                                ps = PUSH(ps, c);
+                                cout << "Defina o que vai ser empilhado" << endl;
+                                cin >> c;
+                                while(pa->info != c){
+                                    pa = pa->link;
+                                    if(pa == NULL)
+                                        break;
+                                }
+                                if(pa == NULL){
+                                    cout << "Nao faz parte do alfabeto da pilha" << endl;
+                                }else {
+                                    pe = PUSH(pe, c);
+                                    bool carros = true;
+                                    while(carros){
+                                        ponteiro2 = inicial;
+                                        cout << "Defina seu caminho" << endl;
+                                        cin >> c;
+                                        k = "Q" + c;
+                                        if(c == "S"){
+                                            break;
+                                        }
+                                        while(ponteiro2->nome != k && ponteiro2 != NULL){
+                                            ponteiro2 = ponteiro2->fila;
+                                        }
+                                        if(ponteiro2 == NULL){
+                                            cout << "Estado nao existe" << endl;
+                                        }
+                                        else{
+                                            pp = PUSH(pp, k);
+                                            carros = false;
+                                        }
+                                    }
+                                }
                             break;
                         }
-                    }   
-                }
-                ponteiro->condicoes = pc;
-                ponteiro->condicionados = pp;
+                    }
+                }   
             }
+            ponteiro->condicoes = pc;
+            ponteiro->condicionados = pp;
+            ponteiro->empilha = pe;
+            ponteiro->desempilha = ps;
         }
-    }
+     }
+}
     return lista;
 }
 
