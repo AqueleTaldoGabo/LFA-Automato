@@ -115,7 +115,6 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                 ps = ponteiro->desempilha;
                 while(true){
                     pk = lista1;
-                    pa = lista2;
                     cout << "Defina o caracter:" << endl;
                     cin >> c;
                     if(c == "S"){
@@ -134,6 +133,7 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                         
                         else{
                             pc = PUSH(pc, c);
+                            pa = lista2;
                             cout << "Defina o que vai ser desempilhado" << endl;
                             cin >> c;
                             while(pa->info != c){
@@ -145,6 +145,7 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                             cout << "Nao faz parte do alfabeto da pilha" << endl;
                             }else{
                                 ps = PUSH(ps, c);
+                                pa = lista2;
                                 cout << "Defina o que vai ser empilhado" << endl;
                                 cin >> c;
                                 while(pa->info != c){
@@ -187,7 +188,7 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
             ponteiro->empilha = pe;
             ponteiro->desempilha = ps;
         }
-     }
+        }
 }
     return lista;
 }
@@ -219,18 +220,19 @@ void imprimeListaCaminhos(Qses *lista){
     
     while(X != NULL){
         cout << X->nome << endl;
-        no *pc = X->condicoes;
-        no *pp = X->condicionados;
-        while(pc != NULL){
-            if(pc == NULL){
+    
+        while(X->condicoes != NULL){
+            if(X->condicoes == NULL){
                 break;
             }
-            cout << pc->info + " -> " + pp->info << endl;
-            pc = pc->link;
-            pp = pp->link;
-
+            cout << X->condicoes->info  + " -> " + X->empilha->info + " -> " + X->desempilha->info + " -> " + X->condicionados->info << endl;
+            X->condicoes = X->condicoes->link;
+            X->condicionados = X->condicionados->link;
+            X->empilha = X->empilha->link;
+            X->desempilha = X->desempilha->link;
         }
         X = X->fila;
     }
     cout << endl;
+    system("pause");
 }

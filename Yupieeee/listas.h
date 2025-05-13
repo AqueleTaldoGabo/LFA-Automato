@@ -7,6 +7,8 @@ struct Qses{
     Qses *fila;
     no *condicoes;
     no *condicionados;
+    no *empilha;
+    no *desempilha;
 };
 
 no *inicializaLista(no *lista){
@@ -35,6 +37,8 @@ Qses *CriaQ(Qses *lista, int quanti){
         pontos->nome = c;
         pontos->condicionados = NULL;
         pontos->condicoes = NULL;
+        pontos->empilha = NULL;
+        pontos->desempilha = NULL;
         N->fila = pontos;
         N = N->fila;
     }
