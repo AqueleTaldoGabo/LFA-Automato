@@ -5,29 +5,36 @@ using namespace std;
 
 no *preencheAlfabeto(no *lista);
 no *preencheEstador(no *lista, int quantia);
-no *preencheEstadoresFinais(no *lista1, no *lista2, int quant);
+no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant);
+Qses *preencheRegras(Qses *lista, int quanti, no *lista1);
+void imprimeListaQ(Qses *lista);
 void imprimeLista(no *lista);
+void imprimeListaCaminhos(Qses *lista);
 
 int main(){
-    no *L1, *L2, *Qs, *Qfs;
+    no *L1, *L2, *Qfs;
+    Qses *qsese;
     int quantQ;
     cout << "Insira a quantidade de estados: "<< endl;
     cin >> quantQ;
     L1 = inicializaLista(L1);
     L2 = inicializaLista(L2);
-    Qs = inicializaLista(Qs);
+    qsese = inicializaListaQ(qsese);
     Qfs = inicializaLista(Qfs);
-    Qs = preencheEstador(Qs, quantQ);
+    qsese = CriaQ(qsese, quantQ);
+    
     cout << "Alfabeto" << endl;
     L1 = preencheAlfabeto(L1);
     cout << "Automato" << endl;
     L2 = preencheAlfabeto(L2);
     cout << "Finais: " << endl;
-    Qfs = preencheEstadoresFinais(Qs, Qfs, quantQ);
-    imprimeLista(Qs);
+    Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
+    qsese = preencheRegras(qsese, quantQ, L1);
+    imprimeListaQ(qsese);
     imprimeLista(Qfs);
     imprimeLista(L1);
     imprimeLista(L2);
+    imprimeListaCaminhos(qsese);
 }
 
 no *preencheAlfabeto(no *lista){
@@ -55,21 +62,22 @@ no *preencheEstador(no *lista, int quantia){
     return (lista);
 }
 
-no *preencheEstadoresFinais(no *lista1, no *lista2, int quant){
-    no *X, *Y;
+no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant){
+    no *X;
+    Qses *Y;
     string c = " ", k;
     X = inicializaLista(X);
     cout << "Quais estados seriam finais:" << endl;
-    imprimeLista(lista1);
+    imprimeListaQ(lista1);
     while(c != "S" || X == NULL){
         Y = lista1;
         cin >> c;
         k = "Q" + c;
         if(c != "S"){
-            while(Y->info != k && stoi(c) <= quant){
-                Y = Y->link;
+            while(Y->nome != k && stoi(c) < quant){
+                Y = Y->fila;
             }
-            if(stoi(c) > quant){
+            if(stoi(c) >= quant){
                 cout << "Estado nao existe" << endl;
             }
             else{
@@ -81,6 +89,78 @@ no *preencheEstadoresFinais(no *lista1, no *lista2, int quant){
     return (lista2);
 }
 
+Qses *preencheRegras(Qses *lista, int quanti, no *lista1){
+    Qses *inicial = lista, *ponteiro = lista, *ponteiro2 = lista;
+    no *pc, *pp, *pk = lista1;
+    
+    string c = " ", k;
+    while(c != "S"){
+        cout << "Qual estado?" << endl;
+        cin >> c;
+        k = "Q" + c;
+        
+        if(c != "S"){
+            ponteiro = inicial;
+            while (ponteiro->nome != k && stoi(c) < quanti){
+                ponteiro = ponteiro->fila;
+            }
+            if(stoi(c) >= quanti){
+                cout << "Nao existe esse ponto!!!!!" << endl;
+            }
+            else{
+                pc = ponteiro->condicoes;
+                pp = ponteiro->condicionados;
+                while(true){
+                    pk = lista1;
+                    cout << "Defina o caracter:" << endl;
+                    cin >> c;
+                    if(c == "S"){
+                        c = " ";
+                        break;
+                    }
+                    else{
+                        while (pk->info != c){
+                            pk = pk->link;
+                            if(pk == NULL)
+                                break;
+                        }
+                        if(pk == NULL){
+                            cout << "Nao tem caractere!!!!" << endl;
+                        }
+                        else{
+                            pc = PUSH(pc, c);
+                            bool carros = true;
+                            while(carros){
+                                ponteiro2 = inicial;
+                                cout << "Defina seu caminho" << endl;
+                                cin >> c;
+                                k = "Q" + c;
+                                if(c == "S"){
+                                    break;
+                                }
+                                while(ponteiro2->nome != k && ponteiro2 != NULL){
+                                    ponteiro2 = ponteiro2->fila;
+                                }
+                                if(ponteiro2 == NULL){
+                                    cout << "Estado nao existe" << endl;
+                                }
+                                else{
+                                    pp = PUSH(pp, k);
+                                    carros = false;
+                                }
+                            }
+                            break;
+                        }
+                    }   
+                }
+                ponteiro->condicoes = pc;
+                ponteiro->condicionados = pp;
+            }
+        }
+    }
+    return lista;
+}
+
 void imprimeLista(no *lista){
     no *X;
     X = lista;
@@ -88,6 +168,38 @@ void imprimeLista(no *lista){
     while(X != NULL){
         cout << X->info << " ";
         X = X->link;
+    }
+    cout << endl;
+}
+
+void imprimeListaQ(Qses *lista){
+    Qses *X;
+    X = lista;
+    
+    while(X != NULL){
+        cout << X->nome << " ";
+        X = X->fila;
+    }
+    cout << endl;
+}
+void imprimeListaCaminhos(Qses *lista){
+    Qses *X;
+    X = lista;
+    
+    while(X != NULL){
+        cout << X->nome << endl;
+        no *pc = X->condicoes;
+        no *pp = X->condicionados;
+        while(pc != NULL){
+            if(pc == NULL){
+                break;
+            }
+            cout << pc->info + " -> " + pp->info << endl;
+            pc = pc->link;
+            pp = pp->link;
+
+        }
+        X = X->fila;
     }
     cout << endl;
 }
