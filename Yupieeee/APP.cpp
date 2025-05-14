@@ -8,14 +8,18 @@ no *preencheEstador(no *lista, int quantia);
 no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant);
 Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2);
 Qses *pilharQses(Qses *lista, string c);
-void imprimeListaQ(Qses *lista);
+string criarInicial(Qses *lista);
+void caminhaLista(Qses *lista, string c, string q, no *finais);
+void imprimeListaQ(Qses *lista, int quant);
 void imprimeLista(no *lista);
 void imprimeListaCaminhos(Qses *lista);
 
 int main(){
     no *L1, *L2, *Qfs;
     Qses *qsese;
+    string entrada, inicial;
     int quantQ;
+
     cout << "Insira a quantidade de estados: "<< endl;
     cin >> quantQ;
     L1 = inicializaLista(L1);
@@ -30,8 +34,15 @@ int main(){
     L2 = preencheAlfabeto(L2);
     cout << "Finais: " << endl;
     Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
+    
+    inicial = criarInicial(qsese);
     qsese = preencheRegras(qsese, quantQ, L1, L2);
-    imprimeListaQ(qsese);
+
+    cout << "Insira a entrada" << endl;
+    cin >> entrada;
+    caminhaLista(qsese, entrada, inicial, Qfs);
+
+    imprimeListaQ(qsese, quantQ);
     imprimeLista(Qfs);
     imprimeLista(L1);
     imprimeLista(L2);
@@ -50,7 +61,31 @@ no *preencheAlfabeto(no *lista){
             X = PUSH(X, c);
     }
     lista = X;
+    system("cls");
     return (lista);
+}
+string criarInicial(Qses *lista){
+    string inicial, k;
+    Qses *aux = lista;
+    while(true){
+        cout << "Insira o estado inicial" << endl;
+        cin >> inicial;
+        k = "Q" + inicial;
+        while(aux->nome != k){
+            aux = aux->fila;
+            if(aux == NULL){
+                break;
+            }
+        }
+        if(aux == NULL){
+            cout << "Não é um estado possivel" << endl;
+        }
+        else{
+            break;
+        }
+        aux = lista;
+    }
+    return k;
 }
 
 no *preencheEstador(no *lista, int quantia){
@@ -69,7 +104,7 @@ no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant){
     string c = " ", k;
     X = inicializaLista(X);
     cout << "Quais estados seriam finais:" << endl;
-    imprimeListaQ(lista1);
+    imprimeListaQ(lista1, quant);
     while(c != "S" || X == NULL){
         Y = lista1;
         cin >> c;
@@ -87,21 +122,23 @@ no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant){
         }
     }
     lista2 = X;
+    system("cls");
     return (lista2);
 }
 
 Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
     Qses *inicial = lista, *ponteiro = lista, *ponteiro2 = lista;
-    no *pc, *pp, *pk = lista1, *pa = lista2, *pe, *ps;
+    no *pk = lista1, *pa = lista2;
     
     string c = " ", k;
     while(c != "S"){
+        ponteiro = inicial;
         cout << "Qual estado?" << endl;
         cin >> c;
         k = "Q" + c;
         
         if(c != "S"){
-            ponteiro = inicial;
+            
             while (ponteiro->nome != k && stoi(c) < quanti){
                 ponteiro = ponteiro->fila;
             }
@@ -109,10 +146,6 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                 cout << "Nao existe esse ponto!!!!!" << endl;
             }
             else{
-                pc = ponteiro->condicoes;
-                pp = ponteiro->condicionados;
-                pe = ponteiro->empilha;
-                ps = ponteiro->desempilha;
                 while(true){
                     pk = lista1;
                     cout << "Defina o caracter:" << endl;
@@ -132,23 +165,35 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                         }
                         
                         else{
-                            pc = PUSH(pc, c);
+                            no *X;
+                            X = new no;
+                            X->info = c;
+                            X->link = ponteiro->condicoes;
+                            ponteiro->condicoes = X;
+
                             pa = lista2;
                             cout << "Defina o que vai ser desempilhado" << endl;
                             cin >> c;
-                            while(pa->info != c){
-                            pa = pa->link;
-                            if(pa == NULL)
-                                break;
+                            while(pa->info != c && c != "NULL"){
+                                pa = pa->link;
+                                if(pa == NULL)
+                                 break;
                             }
                             if(pa == NULL){
-                            cout << "Nao faz parte do alfabeto da pilha" << endl;
+                                cout << "Nao faz parte do alfabeto da pilha" << endl;
                             }else{
-                                ps = PUSH(ps, c);
+                                if(c == "NULL"){
+                                    c = " ";
+                                }
+                                no *Y;
+                                Y = new no;
+                                Y->info = c;
+                                Y->link = ponteiro->desempilha;
+                                ponteiro->desempilha = Y;
                                 pa = lista2;
                                 cout << "Defina o que vai ser empilhado" << endl;
                                 cin >> c;
-                                while(pa->info != c){
+                                while(pa->info != c && c != "NULL"){
                                     pa = pa->link;
                                     if(pa == NULL)
                                         break;
@@ -156,7 +201,14 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                                 if(pa == NULL){
                                     cout << "Nao faz parte do alfabeto da pilha" << endl;
                                 }else {
-                                    pe = PUSH(pe, c);
+                                    if(c == "NULL"){
+                                        c = " ";
+                                    }
+                                    no *Z;
+                                    Z = new no;
+                                    Z->info = c;
+                                    Z->link = ponteiro->empilha;
+                                    ponteiro->empilha = Z;
                                     bool carros = true;
                                     while(carros){
                                         ponteiro2 = inicial;
@@ -173,7 +225,11 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                                             cout << "Estado nao existe" << endl;
                                         }
                                         else{
-                                            pp = PUSH(pp, k);
+                                            no *P;
+                                            P = new no;
+                                            P->info = c;
+                                            P->link = ponteiro->condicionados;
+                                            ponteiro->condicionados = P;
                                             carros = false;
                                         }
                                     }
@@ -183,14 +239,103 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                     }
                 }   
             }
-            ponteiro->condicoes = pc;
-            ponteiro->condicionados = pp;
-            ponteiro->empilha = pe;
-            ponteiro->desempilha = ps;
         }
-        }
+    }
 }
+    lista = ponteiro;
     return lista;
+}
+
+void caminhaLista(Qses *lista, string c, string q, no *finais){
+    Qses *Aux = lista;
+    no *pilha;
+    pilha = inicializaLista(pilha);
+    pilha = PUSH(pilha, "Z");
+    bool verify;
+    while(Aux->nome != q){
+        Aux = Aux->fila;
+    }
+    for(int i = 0; i<c.length(); i++){
+        cout << Aux->nome << endl;
+        imprimeLista(pilha);
+        do{
+            cout << "BOSTA1" << endl;
+            if(c[i] == Aux->condicoes->info[0]){
+                string aux = Aux->condicionados->info;
+                if(Aux->empilha->info != " "){
+                    pilha = PUSH(pilha, Aux->empilha->info);
+                }
+                if(Aux->desempilha->info != " "){
+                    no *pilha2 = pilha, *ANT;
+                    string x;
+                    if(Aux->desempilha->info == pilha->info){
+                        pilha = POP(pilha, &x);
+                        cout << "BOSTA1" << endl;
+                    }
+                    else{
+                        cout << "BOSTA1" << endl;
+                        do{
+                            if(pilha2 == NULL)
+                                break;
+                            ANT = pilha2;
+                            pilha2 = pilha2->link;
+                        }while(pilha2->info != Aux->desempilha->info && pilha2 != NULL);
+                        cout << "BOSTA2" << endl;
+                        if(pilha2 != NULL){
+                            ANT->link = pilha2->link;
+                            delete pilha2;
+                        }
+                        else{
+                            cout << "Nao tem oq desempilhar" << endl;
+                            i+=c.length();
+                            break;
+                        }
+                    }
+                }
+                cout << "legeal" << endl;
+                Aux = lista;
+                while(Aux->nome != ("Q" + aux)){
+                        Aux = Aux->fila;
+                }
+                cout << "legeal" << endl;
+                imprimeLista(pilha);
+                break;
+            }
+            else if(Aux->condicoes == NULL){
+                cout << "Nao e possivel realizar o processo com essa entrada" << endl;
+                i+=c.length();
+            }
+            else{
+                cout << "carlo" << endl;
+                Aux->condicoes = Aux->condicoes->link;
+                Aux->condicionados = Aux->condicionados->link;
+                Aux->desempilha = Aux->desempilha->link;
+                Aux->empilha = Aux->empilha->link;
+            }
+
+        }while(Aux->condicoes != NULL);
+        system("pause");
+        system("cls");
+    }
+    do{
+        if(finais->info == Aux->nome){
+            break;
+        }
+        string x;
+        finais = POP(finais, &x);
+    }while(finais->info != Aux->nome && finais != NULL);
+    if(finais == NULL){
+        cout << "Nao esta no estado final" << endl;
+    }
+    else{
+        cout << "Automato chegou no estado final" << endl;
+    }
+    if(pilha != NULL)
+        cout << "Pilha nao esta vazia" << endl;
+    else
+        cout << "Pilha esta vazia" << endl;
+    system("pause");
+    system("cls");
 }
 
 void imprimeLista(no *lista){
@@ -198,19 +343,24 @@ void imprimeLista(no *lista){
     X = lista;
     
     while(X != NULL){
+        if(X == NULL){
+            break;
+        }
         cout << X->info << " ";
         X = X->link;
     }
     cout << endl;
 }
 
-void imprimeListaQ(Qses *lista){
+void imprimeListaQ(Qses *lista, int quant){
     Qses *X;
+    int i = 0;
     X = lista;
     
-    while(X != NULL){
+    while(X != NULL && i<quant ){
         cout << X->nome << " ";
         X = X->fila;
+        i++;
     }
     cout << endl;
 }
@@ -219,18 +369,19 @@ void imprimeListaCaminhos(Qses *lista){
     X = lista;
     
     while(X != NULL){
+        if(X == NULL)
+            break;
         cout << X->nome << endl;
-    
-        while(X->condicoes != NULL){
-            if(X->condicoes == NULL){
-                break;
-            }
-            cout << X->condicoes->info  + " -> " + X->empilha->info + " -> " + X->desempilha->info + " -> " + X->condicionados->info << endl;
-            X->condicoes = X->condicoes->link;
-            X->condicionados = X->condicionados->link;
-            X->empilha = X->empilha->link;
-            X->desempilha = X->desempilha->link;
-        }
+        int i = 0;
+        do{
+            string condicoes, empilha, desempilha, condicionados;
+            X->condicoes = POP(X->condicoes, &condicoes);
+            X->empilha = POP(X->empilha, &empilha);
+            X->desempilha = POP(X->desempilha, &desempilha);
+            X->condicionados= POP(X->condicionados, &condicionados);
+            cout << condicoes + " -> " + empilha + " -> " + desempilha + " -> " + condicionados << endl;
+            
+        }while(X->condicoes != NULL);
         X = X->fila;
     }
     cout << endl;
