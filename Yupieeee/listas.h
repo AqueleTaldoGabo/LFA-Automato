@@ -59,3 +59,15 @@ no *POP(no *lista, string *c){
     }
     return (lista);
 }
+Qses *QPOP(Qses *lista){
+    Qses *X;
+
+    if(lista != NULL){
+        lista->nome = " ";
+        X = lista;
+        lista = lista->fila;
+        delete X;
+    }
+    
+    return (lista);
+}

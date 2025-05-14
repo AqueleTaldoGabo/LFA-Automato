@@ -31,8 +31,10 @@ int main(){
     cout << "Alfabeto" << endl;
     L1 = preencheAlfabeto(L1);
     cout << "Automato" << endl;
-    L2 = PUSH(L2, "Z");
+
     L2 = preencheAlfabeto(L2);
+    L2 = PUSH(L2, "Z");
+    imprimeLista(L2);
     cout << "Finais: " << endl;
     Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
     
@@ -249,7 +251,12 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
 
 void caminhaLista(Qses *lista, string c, string q, no *finais){
     Qses *Aux = lista;
-    no *pilha;
+    no *pilha, *pilha2;
+    no *pcs[4];
+    pcs[0] = Aux->condicoes;
+    pcs[1] = Aux->condicionados;
+    pcs[2] = Aux->desempilha;
+    pcs[3] = Aux->empilha;
     pilha = inicializaLista(pilha);
     pilha = PUSH(pilha, "Z");
     bool verify;
@@ -260,21 +267,24 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
         cout << Aux->nome << endl;
         imprimeLista(pilha);
         do{
-            cout << "BOSTA1" << endl;
             if(c[i] == Aux->condicoes->info[0]){
                 string aux = Aux->condicionados->info;
                 if(Aux->empilha->info != " "){
                     pilha = PUSH(pilha, Aux->empilha->info);
                 }
+                else{
+                    cout << "AAAAAAA" << endl;
+                }
                 if(Aux->desempilha->info != " "){
                     no *pilha2 = pilha, *ANT;
                     string x;
+                    cout << "Teste" << endl;
                     if(Aux->desempilha->info == pilha->info){
                         pilha = POP(pilha, &x);
                         cout << "BOSTA1" << endl;
                     }
                     else{
-                        cout << "BOSTA1" << endl;
+                        cout << "Teste 2" << endl;
                         do{
                             if(pilha2 == NULL)
                                 break;
@@ -292,32 +302,45 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                             break;
                         }
                     }
+                    
                 }
-                cout << "legeal" << endl;
+                else {
+                        cout << "Socorro" << endl;
+                    }
                 Aux = lista;
+                cout << Aux << endl;
+                Aux->condicoes = pcs[0];
+                Aux->condicionados = pcs[1];
+                Aux->desempilha = pcs[2];
+                Aux->empilha = pcs[3];
                 while(Aux->nome != ("Q" + aux)){
                         Aux = Aux->fila;
                 }
-                cout << "legeal" << endl;
+                cout << Aux << endl;
                 imprimeLista(pilha);
+                
                 break;
             }
-            else if(Aux->condicoes == NULL){
-                cout << "Nao e possivel realizar o processo com essa entrada" << endl;
-                i+=c.length();
-            }
-            else{
+            else if(Aux->condicoes != NULL){
                 cout << "carlo" << endl;
                 Aux->condicoes = Aux->condicoes->link;
                 Aux->condicionados = Aux->condicionados->link;
                 Aux->desempilha = Aux->desempilha->link;
                 Aux->empilha = Aux->empilha->link;
+                
+            }
+            else{
+                cout << "Nao e possivel realizar o processo com essa entrada" << endl;
+                i+=c.length();
             }
 
         }while(Aux->condicoes != NULL);
         system("pause");
         system("cls");
+        
     }
+    
+    
     do{
         if(finais->info == Aux->nome){
             break;
@@ -383,7 +406,7 @@ void imprimeListaCaminhos(Qses *lista){
             cout << condicoes + " -> " + empilha + " -> " + desempilha + " -> " + condicionados << endl;
             
         }while(X->condicoes != NULL);
-        X = X->fila;
+        X = QPOP(X);
     }
     cout << endl;
     system("pause");
