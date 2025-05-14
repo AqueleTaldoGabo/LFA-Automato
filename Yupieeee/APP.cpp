@@ -31,6 +31,7 @@ int main(){
     cout << "Alfabeto" << endl;
     L1 = preencheAlfabeto(L1);
     cout << "Automato" << endl;
+    L2 = PUSH(L2, "Z");
     L2 = preencheAlfabeto(L2);
     cout << "Finais: " << endl;
     Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
