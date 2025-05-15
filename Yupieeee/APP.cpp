@@ -5,7 +5,7 @@ using namespace std;
 
 no *preencheAlfabeto(no *lista);
 no *preencheEstador(no *lista, int quantia);
-no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant);
+no *preencheEstadosFinais(Qses *lista1, no *lista2, int quant);
 Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2);
 Qses *pilharQses(Qses *lista, string c);
 string criarInicial(Qses *lista);
@@ -36,7 +36,7 @@ int main(){
     L2 = PUSH(L2, "Z");
     imprimeLista(L2);
     cout << "Finais: " << endl;
-    Qfs = preencheEstadoresFinais(qsese, Qfs, quantQ);
+    Qfs = preencheEstadosFinais(qsese, Qfs, quantQ);
     
     inicial = criarInicial(qsese);
     qsese = preencheRegras(qsese, quantQ, L1, L2);
@@ -101,7 +101,7 @@ no *preencheEstador(no *lista, int quantia){
     return (lista);
 }
 
-no *preencheEstadoresFinais(Qses *lista1, no *lista2, int quant){
+no *preencheEstadosFinais(Qses *lista1, no *lista2, int quant){
     no *X;
     Qses *Y;
     string c = " ", k;
@@ -266,10 +266,14 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
     for(int i = 0; i<c.length(); i++){
         cout << Aux->nome << endl;
         imprimeLista(pilha);
+        
         do{
+            imprimeLista(Aux->desempilha);
+            cout << Aux->condicoes->info[0] << endl;
             if(c[i] == Aux->condicoes->info[0]){
                 string aux = Aux->condicionados->info;
                 if(Aux->empilha->info != " "){
+                    cout << "Um texto aqui" << endl;
                     pilha = PUSH(pilha, Aux->empilha->info);
                 }
                 else{
@@ -307,14 +311,16 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 else {
                         cout << "Socorro" << endl;
                     }
-                Aux = lista;
-                cout << Aux << endl;
                 Aux->condicoes = pcs[0];
                 Aux->condicionados = pcs[1];
                 Aux->desempilha = pcs[2];
                 Aux->empilha = pcs[3];
+                Aux = lista;
+                cout << Aux << endl;
+                cout << aux << endl;
+                
                 while(Aux->nome != ("Q" + aux)){
-                        Aux = Aux->fila;
+                    Aux = Aux->fila;
                 }
                 cout << Aux << endl;
                 imprimeLista(pilha);
