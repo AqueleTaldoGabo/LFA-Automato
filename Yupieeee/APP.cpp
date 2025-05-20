@@ -174,7 +174,7 @@ Qses *preencheRegras(Qses *lista, int quanti, no *lista1, no *lista2){
                             X->link = ponteiro->condicoes;
                             ponteiro->condicoes = X;
 
-                            pa = lista2;
+                            pa = lista2;//o
                             cout << "Defina o que vai ser desempilhado" << endl;
                             cin >> c;
                             while(pa->info != c && c != "NULL"){
@@ -259,7 +259,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
     pcs[3] = Aux->empilha;
     pilha = inicializaLista(pilha);
     pilha = PUSH(pilha, "Z");
-    bool verify;
+    bool popped = false;
     while(Aux->nome != q){
         Aux = Aux->fila;
     }
@@ -272,30 +272,23 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
             cout << Aux->condicoes->info[0] << endl;
             if(c[i] == Aux->condicoes->info[0]){
                 string aux = Aux->condicionados->info;
+                
                 if(Aux->empilha->info != " "){
-                    cout << "Um texto aqui" << endl;
                     pilha = PUSH(pilha, Aux->empilha->info);
-                }
-                else{
-                    cout << "AAAAAAA" << endl;
                 }
                 if(Aux->desempilha->info != " "){
                     no *pilha2 = pilha, *ANT;
                     string x;
-                    cout << "Teste" << endl;
                     if(Aux->desempilha->info == pilha->info){
                         pilha = POP(pilha, &x);
-                        cout << "BOSTA1" << endl;
                     }
                     else{
-                        cout << "Teste 2" << endl;
                         do{
                             if(pilha2 == NULL)
                                 break;
                             ANT = pilha2;
                             pilha2 = pilha2->link;
                         }while(pilha2->info != Aux->desempilha->info && pilha2 != NULL);
-                        cout << "BOSTA2" << endl;
                         if(pilha2 != NULL){
                             ANT->link = pilha2->link;
                             delete pilha2;
@@ -306,11 +299,9 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                             break;
                         }
                     }
-                    
                 }
-                else {
-                        cout << "Socorro" << endl;
-                    }
+               
+                
                 Aux->condicoes = pcs[0];
                 Aux->condicionados = pcs[1];
                 Aux->desempilha = pcs[2];
@@ -318,17 +309,21 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 Aux = lista;
                 cout << Aux << endl;
                 cout << aux << endl;
-                
+                    
                 while(Aux->nome != ("Q" + aux)){
                     Aux = Aux->fila;
+                    pcs[0] = Aux->condicoes;
+                    pcs[1] = Aux->condicionados;
+                    pcs[2] = Aux->desempilha;
+                    pcs[3] = Aux->empilha;
                 }
+               
                 cout << Aux << endl;
                 imprimeLista(pilha);
                 
                 break;
             }
             else if(Aux->condicoes != NULL){
-                cout << "carlo" << endl;
                 Aux->condicoes = Aux->condicoes->link;
                 Aux->condicionados = Aux->condicionados->link;
                 Aux->desempilha = Aux->desempilha->link;
@@ -374,7 +369,7 @@ void imprimeLista(no *lista){
     
     while(X != NULL){
         if(X == NULL){
-            break;
+            break;//adeus código foi bom comentar enquanto durou (comentário importante não remover)
         }
         cout << X->info << " ";
         X = X->link;
@@ -415,5 +410,5 @@ void imprimeListaCaminhos(Qses *lista){
         X = QPOP(X);
     }
     cout << endl;
-    system("pause");
+    system("pause");//oh nice
 }
