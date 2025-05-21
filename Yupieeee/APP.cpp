@@ -13,43 +13,53 @@ void caminhaLista(Qses *lista, string c, string q, no *finais);
 void imprimeListaQ(Qses *lista, int quant);
 void imprimeLista(no *lista);
 void imprimeListaCaminhos(Qses *lista);
+void imprimeFinal(Qses *lista, int quant,no *lista1,no *lista2,no *lista3);
+string vazio(string vazio);
+no *zeraNo(no *list);
 
 int main(){
     no *L1, *L2, *Qfs;
     Qses *qsese;
-    string entrada, inicial;
+    string entrada, inicial, nA;
     int quantQ;
 
-    cout << "Insira a quantidade de estados: "<< endl;
-    cin >> quantQ;
-    L1 = inicializaLista(L1);
-    L2 = inicializaLista(L2);
-    qsese = inicializaListaQ(qsese);
-    Qfs = inicializaLista(Qfs);
-    qsese = CriaQ(qsese, quantQ);
+   // while (true)
+    //{
+        nA=" ";
+        cout << "Insira a quantidade de estados: "<< endl;
+        cin >> nA;
+        //if(nA == "S"){
+           // break;
+       //}
+        quantQ = stoi(nA);
+        L1 = inicializaLista(L1);
+        L2 = inicializaLista(L2);
+        qsese = inicializaListaQ(qsese);
+        Qfs = inicializaLista(Qfs);
+        qsese = CriaQ(qsese, quantQ);
+        
+        cout << "Alfabeto" << endl;
+        L1 = preencheAlfabeto(L1);
+        cout << "Pilha do Automato" << endl;
+
+        L2 = preencheAlfabeto(L2);
+        L2 = PUSH(L2, "Z");
+        Qfs = preencheEstadosFinais(qsese, Qfs, quantQ);
+        
+        inicial = criarInicial(qsese);
+        qsese = preencheRegras(qsese, quantQ, L1, L2);
+        system("cls");
+        cout << "Insira a entrada" << endl;
+        cin >> entrada;
+        caminhaLista(qsese, entrada, inicial, Qfs);
+
+        imprimeFinal(qsese,quantQ,L1,L2,Qfs);
+        system("cls");
+        //L1 = zeraNo(L1);
+        //L2 = zeraNo(L2);
+        //Qfs = zeraNo(Qfs);
+    //}
     
-    cout << "Alfabeto" << endl;
-    L1 = preencheAlfabeto(L1);
-    cout << "Automato" << endl;
-
-    L2 = preencheAlfabeto(L2);
-    L2 = PUSH(L2, "Z");
-    imprimeLista(L2);
-    cout << "Finais: " << endl;
-    Qfs = preencheEstadosFinais(qsese, Qfs, quantQ);
-    
-    inicial = criarInicial(qsese);
-    qsese = preencheRegras(qsese, quantQ, L1, L2);
-
-    cout << "Insira a entrada" << endl;
-    cin >> entrada;
-    caminhaLista(qsese, entrada, inicial, Qfs);
-
-    imprimeListaQ(qsese, quantQ);
-    imprimeLista(Qfs);
-    imprimeLista(L1);
-    imprimeLista(L2);
-    imprimeListaCaminhos(qsese);
 }
 
 no *preencheAlfabeto(no *lista){
@@ -264,15 +274,21 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
         Aux = Aux->fila;
     }
     for(int i = 0; i<c.length(); i++){
+        cout << "Estado atual:" << endl;
         cout << Aux->nome << endl;
+        cout << endl;
+        cout << "Estado atual da pilha:" << endl;
         imprimeLista(pilha);
         
         do{
+            cout << endl;
+            cout << "caracter a ser desempilhado:" << endl;
             imprimeLista(Aux->desempilha);
+            cout << endl;
+            cout << "caracter sendo verificado:" << endl;
             cout << Aux->condicoes->info[0] << endl;
             if(c[i] == Aux->condicoes->info[0]){
                 string aux = Aux->condicionados->info;
-                
                 if(Aux->empilha->info != " "){
                     pilha = PUSH(pilha, Aux->empilha->info);
                 }
@@ -294,7 +310,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                             delete pilha2;
                         }
                         else{
-                            cout << "Nao tem oq desempilhar" << endl;
+                            cout << "Nao tem o que desempilhar" << endl;
                             i+=c.length();
                             break;
                         }
@@ -307,8 +323,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 Aux->desempilha = pcs[2];
                 Aux->empilha = pcs[3];
                 Aux = lista;
-                cout << Aux << endl;
-                cout << aux << endl;
+                
                     
                 while(Aux->nome != ("Q" + aux)){
                     Aux = Aux->fila;
@@ -318,9 +333,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                     pcs[3] = Aux->empilha;
                 }
                
-                cout << Aux << endl;
-                imprimeLista(pilha);
-                
+
                 break;
             }
             else if(Aux->condicoes != NULL){
@@ -383,20 +396,26 @@ void imprimeListaQ(Qses *lista, int quant){
     X = lista;
     
     while(X != NULL && i<quant ){
-        cout << X->nome << " ";
+        cout << X->nome;
+        if (i < quant-1)
+        {
+            cout << ", ";
+        }
         X = X->fila;
         i++;
     }
-    cout << endl;
+    cout << "."<< endl;
 }
 void imprimeListaCaminhos(Qses *lista){
     Qses *X;
     X = lista;
     
+    cout << "Caminhos dos estados:" << endl;
     while(X != NULL){
         if(X == NULL)
             break;
-        cout << X->nome << endl;
+
+        cout << X->nome << ":" << endl;
         int i = 0;
         do{
             string condicoes, empilha, desempilha, condicionados;
@@ -404,11 +423,43 @@ void imprimeListaCaminhos(Qses *lista){
             X->empilha = POP(X->empilha, &empilha);
             X->desempilha = POP(X->desempilha, &desempilha);
             X->condicionados= POP(X->condicionados, &condicionados);
-            cout << condicoes + " -> " + empilha + " -> " + desempilha + " -> " + condicionados << endl;
             
+            cout << vazio(condicoes) + " -> " + vazio(empilha) + " -> " + vazio(desempilha) + " -> " + vazio(condicionados) << endl;
+            if(X->condicoes == NULL){
+                break;
+            }
         }while(X->condicoes != NULL);
         X = QPOP(X);
     }
+    delete X;
     cout << endl;
     system("pause");//oh nice
 }
+void imprimeFinal(Qses *lista, int quant,no *lista1,no *lista2,no *lista3){
+    cout << "Estados:" << endl;
+    imprimeListaQ(lista, quant);
+    cout << "Estados finais:" << endl;
+    imprimeLista(lista3);
+    cout << "Alfabeto:" << endl;
+    imprimeLista(lista1);
+    cout << "Caracteres aceitos pela pilha:" << endl;
+    imprimeLista(lista2);
+    imprimeListaCaminhos(lista);
+}
+
+string vazio(string vazio){
+    if(vazio == " "){
+        vazio = "\u00FF";
+    }
+    return vazio;
+}
+no *zeraNo(no *list){
+    while (list != NULL)
+    {
+        string s;
+        list = POP(list,&s);
+    }
+    delete list;
+    return list;
+}
+// a gente teria terminado muito mais cedo se o nosso tdah permitisse...
