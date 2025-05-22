@@ -332,7 +332,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 
                     
                 while(Aux->nome != ("Q" + aux)){
-                    if(Aux->desempilha->info == " " && contador > 0){
+                    if(Aux->desempilha->info == " " && Aux->desempilha->info == "Z" && contador > 0){
                         Aux->condicoes = Aux->condicoes->link;
                         Aux->condicionados = Aux->condicionados->link;
                         Aux->desempilha = Aux->desempilha->link;
