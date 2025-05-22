@@ -295,7 +295,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                     pilha = PUSH(pilha, Aux->empilha->info);
                     contador++;
                 }
-                if(Aux->desempilha->info != " "){
+                if((Aux->desempilha->info != " " && Aux->desempilha->info != "Z") || (Aux->desempilha->info == "Z" && contador == 0)){
                     no *pilha2 = pilha, *ANT;
                     string x;
                     if(Aux->desempilha->info == pilha->info){
@@ -332,7 +332,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 
                     
                 while(Aux->nome != ("Q" + aux)){
-                    if(Aux->desempilha->info == " " || Aux->desempilha->info == "Z" && contador > 0){
+                    if((Aux->desempilha->info == " " || Aux->desempilha->info == "Z") && contador > 0){
                         Aux->condicoes = Aux->condicoes->link;
                         Aux->condicionados = Aux->condicionados->link;
                         Aux->desempilha = Aux->desempilha->link;
@@ -425,7 +425,7 @@ void imprimeListaCaminhos(Qses *lista){
     
     cout << "Caminhos dos estados:" << endl;
     while(X != NULL){
-        if(X == NULL)
+        if(X->fila == NULL)
             break;
 
         cout << X->nome << ":" << endl;
