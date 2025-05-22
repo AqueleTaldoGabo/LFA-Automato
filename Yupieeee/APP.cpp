@@ -263,6 +263,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
     Qses *Aux = lista;
     no *pilha, *pilha2;
     no *pcs[4];
+    int contador = 0;
     pcs[0] = Aux->condicoes;
     pcs[1] = Aux->condicionados;
     pcs[2] = Aux->desempilha;
@@ -281,6 +282,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
         imprimeLista(pilha);
         
         do{
+            sapo:
             cout << endl;
             cout << "caracter a ser desempilhado:" << endl;
             imprimeLista(Aux->desempilha);
@@ -291,6 +293,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 string aux = Aux->condicionados->info;
                 if(Aux->empilha->info != " "){
                     pilha = PUSH(pilha, Aux->empilha->info);
+                    contador++;
                 }
                 if(Aux->desempilha->info != " "){
                     no *pilha2 = pilha, *ANT;
@@ -304,6 +307,7 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                                 break;
                             ANT = pilha2;
                             pilha2 = pilha2->link;
+                            
                         }while(pilha2->info != Aux->desempilha->info && pilha2 != NULL);
                         if(pilha2 != NULL){
                             ANT->link = pilha2->link;
@@ -315,7 +319,9 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                             break;
                         }
                     }
+                    contador--;
                 }
+                
                
                 
                 Aux->condicoes = pcs[0];
@@ -326,6 +332,13 @@ void caminhaLista(Qses *lista, string c, string q, no *finais){
                 
                     
                 while(Aux->nome != ("Q" + aux)){
+                    if(Aux->desempilha->info == " " && contador > 0){
+                        Aux->condicoes = Aux->condicoes->link;
+                        Aux->condicionados = Aux->condicionados->link;
+                        Aux->desempilha = Aux->desempilha->link;
+                        Aux->empilha = Aux->empilha->link;
+                        goto sapo;
+                    }
                     Aux = Aux->fila;
                     pcs[0] = Aux->condicoes;
                     pcs[1] = Aux->condicionados;
